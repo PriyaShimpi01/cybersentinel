@@ -32,3 +32,72 @@ This document maps selected MITRE ATT&CK techniques to CyberSentinel's planned d
 - The system should explain which signals contributed to an alert and why it was flagged.
 
 **Reference:** [MITRE ATT&CK Enterprise Techniques](https://attack.mitre.org/techniques/enterprise/)
+
+
+# Evaluation Metrics for CyberSentinel
+
+## 1. Confusion Matrix
+
+| Prediction | Actual Attack | Actual Normal |
+|---|---:|---:|
+| Predicted Attack | TP = 80 | FP = 70 |
+| Predicted Normal | FN = 20 | TN = 9830 |
+
+### Understanding the terms
+
+- **TP (True Positive):** Real attacks correctly detected.
+- **FP (False Positive):** Normal events incorrectly flagged as attacks.
+- **FN (False Negative):** Real attacks missed by the model.
+- **TN (True Negative):** Normal events correctly classified.
+
+## 2. Evaluation Metrics
+
+### 1. Accuracy
+- **Meaning:** Percentage of all predictions that are correct.
+- **Formula:** `(TP + TN) / Total`
+- **Example:** Out of 10,000 events, how many did we classify correctly?
+
+### 2. Precision
+- **Meaning:** Of all the alerts generated, how many are genuine attacks?
+- **Formula:** `TP / (TP + FP)`
+- **Example:** Of 150 brute-force alerts, how many were actual brute-force attempts?
+
+### 3. Recall (Sensitivity)
+- **Meaning:** Of all actual attacks, how many did we detect?
+- **Formula:** `TP / (TP + FN)`
+- **Example:** Of the real brute-force attempts, how many did we catch?
+
+### 4. F1-score
+- **Meaning:** Harmonic mean of precision and recall.
+- **Formula:** `2 * (Precision * Recall) / (Precision + Recall)`
+- **Example:** How well does the model balance attack detection and alert reliability?
+
+### 5. False Positive Rate (FPR)
+- **Meaning:** Percentage of normal events incorrectly flagged as attacks.
+- **Formula:** `FP / (FP + TN)`
+- **Example:** Out of all legitimate login attempts, how many were incorrectly flagged?
+
+### 6. Specificity
+- **Meaning:** Percentage of normal events correctly identified as normal.
+- **Formula:** `TN / (TN + FP)`
+- **Example:** Out of all legitimate events, how many did we correctly ignore?
+
+## 3. ROC-AUC
+
+- Plots True Positive Rate (TPR) against False Positive Rate (FPR).
+- Measures the model's ability to distinguish positive and negative classes across different classification thresholds.
+
+## 4. PR-AUC
+
+- Plots Precision against Recall.
+- Focuses on positive-class detection and alert reliability.
+
+## 5. Why PR-AUC is Important for CyberSentinel
+
+CyberSentinel works with imbalanced cybersecurity data where normal events greatly outnumber attacks.
+
+ROC-AUC can appear high even when the model generates many false alerts because the number of normal events is very large.
+
+PR-AUC highlights the relationship between genuine attack detection and false alerts.
+
+Therefore, PR-AUC is particularly useful for evaluating CyberSentinel's attack detection models. ROC-AUC should also be reported for a more complete evaluation.
