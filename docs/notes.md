@@ -100,4 +100,43 @@ ROC-AUC can appear high even when the model generates many false alerts because 
 
 PR-AUC highlights the relationship between genuine attack detection and false alerts.
 
-Therefore, PR-AUC is particularly useful for evaluating CyberSentinel's attack detection models. ROC-AUC should also be reported for a more complete evaluation.
+
+
+
+## Phase 1b: All Days and Cross-Day Evaluation
+
+### Data
+- 8 files, 2,827,876 rows before cleaning, 2,497,980 after removing duplicates.
+- Grouped labels into 7 families: BENIGN, BruteForce (FTP/SSH-Patator), DoS, DDoS, PortScan, WebAttack, Bot.
+- Dropped Infiltration (36 rows): too few to learn or test fairly.
+
+### Results
+| Experiment | PR-AUC | Recall | Precision |
+|---|---|---|---|
+| A: random split, all days | 0.9999 | 0.9995 | 0.9952 |
+| B: train Mon-Thu, test Fri (unseen attacks) | 0.7906 | 0.0066 | 0.9613 |
+| B2: B without Destination Port | 0.7390 | 0.0021 | 0.8070 |
+| C: Mon-Thu + first half of Fri, test second half | 0.9986 | 0.9903 | 0.9997 |
+| Isolation Forest (Monday normal only), test Fri | 0.456 | at FPR 1%: 0.0000 | n/a |
+
+Per-family recall after adding labeled Friday data: DDoS 99.97%, PortScan 99.5%, Bot 47.3% (few examples).
+
+Findings:
+- Labeled examples fix the unseen-attack problem (recall 0.7% -> 99%), which is why CyberSentinel needs an analyst feedback loop that retrains on labeled incidents.
+- Isolation Forest on raw flow features performed near random (PR-AUC 0.456 vs baseline ~0.36). Flow features vary too much between days. Anomaly detection fits better on per-user behavior, which is the insider-threat model.
+- Experiment C is optimistic: halves of the same file are similar.
+
+### Key finding
+A random split gives 99.99%, but on a different day with unseen attacks recall fell to 0.7%. The model learned the attacks it was shown, not "attacks" in general. Per attack: Bot 0%, DDoS 0.8%, PortScan 0.5%.
+
+### Threshold tuning
+At the default 0.5 threshold, recall was under 1%. With a false-alarm budget of 0.1% FPR, recall was 31%; at 1% it was 40%; at 5% it was 50%. The model ranks attacks as more suspicious than normal but with small scores, so choosing the threshold matters.
+
+### What this means for CyberSentinel
+- Supervised detection is strong on attack types it has seen and weak on new ones.
+- Hence: (1) an anomaly-based detector alongside it, (2) an analyst feedback loop that retrains on newly labeled attacks, (3) correlation to combine weak signals.
+
+### What I have NOT proven
+- All CIC-IDS2017 data comes from one lab network over five days.
+- Experiment C is optimistic because halves of the same file are similar.
+- I cannot say how the model performs on real production traffic.
