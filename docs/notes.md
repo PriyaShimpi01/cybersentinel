@@ -140,3 +140,11 @@ At the default 0.5 threshold, recall was under 1%. With a false-alarm budget of 
 - All CIC-IDS2017 data comes from one lab network over five days.
 - Experiment C is optimistic because halves of the same file are similar.
 - I cannot say how the model performs on real production traffic.
+
+
+- v2 ransomware (mixed stealth in training, bulk-rename confounder, baseline + sustained features): PR-AUC 1.000, recall at 1% FPR = 1.0 at stealth 1.0/0.5/0.2.
+- Perfect because (a) the model trains on all stealth levels, like Experiment C, and (b) train and test come from the same simulator, so the model can learn the generator's parameters. This shows the simulator is separable, not real-world performance.
+- Single-window vs +baseline&sustained features cannot be compared (both perfect).
+- False-alarm rate: compress 2.6%, bulk_rename 1.8%, update 0.27%, backup 0.12%, office 0.13%. Confounders cause most false alarms.
+- Held-out stealth 0.2 test (never seen in training): recall at 1% FPR = 0.059
+- Limitation: synthetic; real ransomware differs.
