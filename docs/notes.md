@@ -146,5 +146,5 @@ At the default 0.5 threshold, recall was under 1%. With a false-alarm budget of 
 - Perfect because (a) the model trains on all stealth levels, like Experiment C, and (b) train and test come from the same simulator, so the model can learn the generator's parameters. This shows the simulator is separable, not real-world performance.
 - Single-window vs +baseline&sustained features cannot be compared (both perfect).
 - False-alarm rate: compress 2.6%, bulk_rename 1.8%, update 0.27%, backup 0.12%, office 0.13%. Confounders cause most false alarms.
-- Held-out stealth 0.2 test (never seen in training): recall at 1% FPR = 0.059
+- Held-out stealth test: trained without stealth 0.2, tested on it: recall at 1% FPR = 5.9% (vs 100% at 1.0 and 0.5, which were in training). A model only recognizes ransomware speeds it has seen. This supports retraining on analyst-labelled incidents.
 - Limitation: synthetic; real ransomware differs.
