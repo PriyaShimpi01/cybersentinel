@@ -148,3 +148,11 @@ At the default 0.5 threshold, recall was under 1%. With a false-alarm budget of 
 - False-alarm rate: compress 2.6%, bulk_rename 1.8%, update 0.27%, backup 0.12%, office 0.13%. Confounders cause most false alarms.
 - Held-out stealth test: trained without stealth 0.2, tested on it: recall at 1% FPR = 5.9% (vs 100% at 1.0 and 0.5, which were in training). A model only recognizes ransomware speeds it has seen. This supports retraining on analyst-labelled incidents.
 - Limitation: synthetic; real ransomware differs.
+
+
+- Raw alerts 128,823 (network 127,322, insider 226, ransomware 1,275) -> 420 incidents (99.7%). This is mostly because I grouped network flows into 500-flow campaigns myself, so it is NOT a fair headline. Fairer: false alerts 157 -> false incidents 102 (35% reduction).
+- First scoring version saturated: the insider percentile score (>=0.95) is not a probability, and multipliers were clipped at 1.0, so many incidents tied at 1.0 and incident PR-AUC (0.804) was barely above baseline (0.757).
+- After fixing saturation: incident PR-AUC 0.995 (baseline 0.758), precision@20 = precision@50 = 1.0, 178 unique scores. 29 multi-stage incidents, all malicious (partly by construction: planted links, lenient "true").
+- Headline reduction 128,823 -> 426 (99.7%) is mostly my own 500-flow grouping of floods. Fairer: false alerts 157 -> 103 false incidents (34%); insider+ransomware alerts 1,501 -> 209 incidents.
+- Ablation (max raw score vs full incident score): 0.995 vs 0.995
+- Limits: simulated links, my own multipliers and weights, detector scores not calibrated.
